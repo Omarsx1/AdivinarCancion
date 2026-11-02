@@ -54,21 +54,6 @@ function AnswerButton({
   );
 }
 
-function LockedOptions({ options }: { options: SongOption[] }) {
-  return (
-    <div className="space-y-2 opacity-60">
-      {options.map((option, index) => (
-        <div key={option.id} className="flex min-h-14 items-center gap-3 rounded-2xl bg-white/10 px-4 py-2.5">
-          <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/15 text-sm font-black">
-            {LETTERS[index] ?? index + 1}
-          </span>
-          <span className="min-w-0 flex-1 truncate text-base font-bold">{option.label}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function RevealCard({
   view,
   myAnswer,
@@ -195,8 +180,27 @@ export function SongPlayerContainer({ initialCode }: SongPlayerContainerProps) {
               urgent={timer.urgent}
               label="Clip"
             />
-            <LockedOptions options={view.options} />
-            <p className="text-center text-sm text-haze">Se habilitan cuando termine el clip.</p>
+            <div className="space-y-2">
+              {view.options.map((option, index) => (
+                <AnswerButton
+                  key={option.id}
+                  option={option}
+                  index={index}
+                  picked={player.myAnswer === option.id}
+                  disabled={player.myAnswer !== null}
+                  onPick={() => player.submitAnswer(option.id)}
+                />
+              ))}
+            </div>
+            {player.myAnswer !== null ? (
+              <p className="flex items-center gap-2 rounded-2xl bg-white/10 px-4 py-3 text-sm font-bold">
+                <Check size={16} className="text-sun" /> Respuesta enviada.
+              </p>
+            ) : (
+              <p className="text-center text-sm text-haze">
+                Puedes responder mientras escuchas.
+              </p>
+            )}
           </Card>
         )}
 

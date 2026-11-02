@@ -51,7 +51,6 @@ Requiere Node 22.23 o superior (Astro 7).
 - 4 opciones por canción: la correcta y 3 distractores creíbles (2 del mismo artista y 1 del mismo género desde `src/data/songCatalog.ts`), con el pool cargado como respaldo.
 - Clip de 10/15/20/25 segundos (20 por defecto), tomado de un punto aleatorio entre el 20 % y el 75 % de la canción.
 - 5 segundos para responder (5/8/10).
-- **Quitar voz (aproximado)**: cancelación de fase de la voz central; se puede apagar en Administrar.
 - **Desde el inicio**: reinicia el clip en 0:00 para usar intros instrumentales.
 - +100 puntos por acierto. Desempate: aciertos y luego tiempo acumulado de respuesta.
 - Los títulos se leen de `Artista - Título.mp3` y se pueden editar en el panel.

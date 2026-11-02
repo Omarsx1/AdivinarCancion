@@ -138,7 +138,7 @@ export function useSongPlayer(initialCode: RoomCode | null) {
   const submitAnswer = useCallback(
     (optionId: string) => {
       if (session === null || view === null) return;
-      if (view.phase !== 'answer' || myAnswer !== null) return;
+      if ((view.phase !== 'clip' && view.phase !== 'answer') || myAnswer !== null) return;
       void channelRef.current?.send({
         type: 'broadcast',
         event: 'answer',

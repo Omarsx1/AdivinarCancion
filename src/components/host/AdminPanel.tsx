@@ -22,11 +22,9 @@ interface AdminPanelProps {
   clipSeconds: number;
   answerSeconds: number;
   volume: number;
-  instrumental: boolean;
   onClipSeconds: (seconds: number) => void;
   onAnswerSeconds: (seconds: number) => void;
   onVolume: (volume: number) => void;
-  onInstrumental: (value: boolean) => void;
   onAddFiles: (files: FileList) => void;
   onUpdate: (id: string, patch: { title?: string; artist?: string }) => void;
   onRemove: (id: string) => void;
@@ -97,11 +95,9 @@ export function AdminPanel({
   clipSeconds,
   answerSeconds,
   volume,
-  instrumental,
   onClipSeconds,
   onAnswerSeconds,
   onVolume,
-  onInstrumental,
   onAddFiles,
   onUpdate,
   onRemove,
@@ -190,22 +186,6 @@ export function AdminPanel({
                 />
               </label>
 
-              <label className="mt-5 flex items-start gap-3">
-                <input
-                  type="checkbox"
-                  checked={instrumental}
-                  onChange={(event) => onInstrumental(event.target.checked)}
-                  className="mt-0.5 size-5 accent-night"
-                />
-                <span>
-                  <span className="block text-sm font-bold text-night/70">
-                    Quitar voz (aproximado)
-                  </span>
-                  <span className="block text-xs text-night/50">
-                    Cancela la voz central. Prueba cada canción antes de la partida.
-                  </span>
-                </span>
-              </label>
             </section>
 
             <section className="rounded-[28px] bg-ink p-5 text-paper">

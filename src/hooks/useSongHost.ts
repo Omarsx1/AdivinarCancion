@@ -40,16 +40,6 @@ interface HostState {
   answerMs: number;
 }
 
-interface AudioGraph {
-  ctx: AudioContext;
-  source: MediaElementAudioSourceNode;
-  splitter: ChannelSplitterNode;
-  merger: ChannelMergerNode;
-  gainL: GainNode;
-  gainR: GainNode;
-  sum: GainNode;
-}
-
 const IDLE_TIMER: TimerState = { endsAt: null, durationMs: null };
 const AUDIO_FILE = /\.(mp3|m4a|mp4|aac|wav|ogg|oga|flac|opus|webm)$/i;
 
@@ -111,14 +101,11 @@ export function useSongHost(initialCode?: RoomCode) {
   const [connection, setConnection] = useState<ConnectionStatus>('connecting');
   const [audioError, setAudioError] = useState<string | null>(null);
   const [volume, setVolumeState] = useState(0.85);
-  const [instrumental, setInstrumentalState] = useState(true);
-  const instrumentalRef = useRef(true);
 
   const stateRef = useRef(state);
   stateRef.current = state;
   const channelRef = useRef<RealtimeChannel | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const graphRef = useRef<AudioGraph | null>(null);
   const volumeRef = useRef(volume);
   volumeRef.current = volume;
   const clipRemainingRef = useRef<number>(DEFAULT_CLIP_SECONDS * 1000);
@@ -126,58 +113,15 @@ export function useSongHost(initialCode?: RoomCode) {
 
   const supabase = useMemo(() => getSupabaseClient(), []);
 
-  const applyInstrumental = useCallback((on: boolean) => {
-    const graph = graphRef.current;
-    if (graph === null) return;
-    graph.merger.disconnect();
-    graph.sum.disconnect();
-    graph.gainL.disconnect();
-    graph.gainR.disconnect();
-    if (on) {
-      graph.gainL.gain.value = 1;
-      graph.gainR.gain.value = -1;
-      graph.gainL.connect(graph.sum);
-      graph.gainR.connect(graph.sum);
-      graph.sum.connect(graph.ctx.destination);
-    } else {
-      graph.gainL.gain.value = 1;
-      graph.gainR.gain.value = 1;
-      graph.gainL.connect(graph.merger, 0, 0);
-      graph.gainR.connect(graph.merger, 0, 1);
-      graph.merger.connect(graph.ctx.destination);
-    }
-  }, []);
-
   const ensureAudio = useCallback((): HTMLAudioElement => {
     if (audioRef.current === null) {
       const audio = new Audio();
       audio.preload = 'auto';
       audio.volume = volumeRef.current;
       audioRef.current = audio;
-      try {
-        const Ctor =
-          window.AudioContext ??
-          (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-        if (Ctor !== undefined) {
-          const ctx = new Ctor();
-          const source = ctx.createMediaElementSource(audio);
-          const splitter = ctx.createChannelSplitter(2);
-          const merger = ctx.createChannelMerger(2);
-          const gainL = ctx.createGain();
-          const gainR = ctx.createGain();
-          const sum = ctx.createGain();
-          source.connect(splitter);
-          splitter.connect(gainL, 0);
-          splitter.connect(gainR, 1);
-          graphRef.current = { ctx, source, splitter, merger, gainL, gainR, sum };
-          applyInstrumental(instrumentalRef.current);
-        }
-      } catch {
-        graphRef.current = null;
-      }
     }
     return audioRef.current;
-  }, [applyInstrumental]);
+  }, []);
 
   const pauseAudio = useCallback(() => {
     audioRef.current?.pause();
@@ -185,8 +129,6 @@ export function useSongHost(initialCode?: RoomCode) {
 
   const playAudio = useCallback(() => {
     const audio = ensureAudio();
-    const graph = graphRef.current;
-    if (graph !== null && graph.ctx.state === 'suspended') void graph.ctx.resume();
     void audio.play().catch(() => {
       setAudioError(
         'El navegador bloqueó el audio. Pulsa Reproducir otra vez (o revisa el volumen de la pestaña).',
@@ -294,7 +236,7 @@ export function useSongHost(initialCode?: RoomCode) {
     if (!isAnswerPayload(payload)) return;
     const receivedAt = Date.now();
     setState((prev) => {
-      if (prev.phase !== 'answer') return prev;
+      if (prev.phase !== 'clip' && prev.phase !== 'answer') return prev;
       if (prev.answers[payload.playerId] !== undefined) return prev;
       if (!prev.options.some((option) => option.id === payload.optionId)) return prev;
 
@@ -425,10 +367,8 @@ export function useSongHost(initialCode?: RoomCode) {
 
   useEffect(() => {
     const audio = audioRef.current;
-    const graph = graphRef.current;
     return () => {
       audio?.pause();
-      void graph?.ctx.close();
     };
   }, []);
 
@@ -685,15 +625,6 @@ export function useSongHost(initialCode?: RoomCode) {
     if (audioRef.current !== null) audioRef.current.volume = clamped;
   }, []);
 
-  const setInstrumental = useCallback(
-    (on: boolean) => {
-      instrumentalRef.current = on;
-      setInstrumentalState(on);
-      applyInstrumental(on);
-    },
-    [applyInstrumental],
-  );
-
   const standings = useMemo(() => toStandings(state.players), [state.players]);
   const connectedPlayers = useMemo(
     () => Object.values(state.players).filter((player) => player.connected),
@@ -717,7 +648,6 @@ export function useSongHost(initialCode?: RoomCode) {
     clipMs: state.clipMs,
     answerMs: state.answerMs,
     volume,
-    instrumental,
     audioError,
     dismissAudioError: () => setAudioError(null),
     canStart: state.songs.length >= MIN_SONGS,
@@ -738,6 +668,5 @@ export function useSongHost(initialCode?: RoomCode) {
     setClipSeconds,
     setAnswerSeconds,
     setVolume,
-    setInstrumental,
   };
 }

@@ -136,6 +136,9 @@ function ClipView(props: NowPlayingProps) {
               <p className="max-w-xl text-base text-haze">
                 Sube el volumen de la pestaña y compártela con audio en Teams.
               </p>
+              <p className="text-sm font-bold text-haze">
+                {answerCount} de {playerCount} respondieron
+              </p>
             </>
           ) : (
             <>
