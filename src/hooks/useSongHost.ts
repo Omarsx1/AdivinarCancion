@@ -99,6 +99,7 @@ export function useSongHost(initialCode?: RoomCode) {
   volumeRef.current = volume;
   const clipRemainingRef = useRef<number>(DEFAULT_CLIP_SECONDS * 1000);
   const answerStartedAtRef = useRef<number>(0);
+  const playTokenRef = useRef(0);
 
   const supabase = useMemo(() => getSupabaseClient(), []);
 
@@ -118,9 +119,16 @@ export function useSongHost(initialCode?: RoomCode) {
 
   const playAudio = useCallback(() => {
     const audio = ensureAudio();
-    void audio.play().catch(() => {
+    const token = playTokenRef.current + 1;
+    playTokenRef.current = token;
+    void audio.play().catch((error: unknown) => {
+      if (token !== playTokenRef.current) return;
+      const name = error instanceof DOMException ? error.name : '';
+      if (name === 'AbortError') return;
       setAudioError(
-        'El navegador bloqueó el audio. Pulsa Reanudar para reintentar (o revisa el volumen de la pestaña).',
+        name === 'NotAllowedError'
+          ? 'El navegador bloqueó el audio. Pulsa Reanudar para reintentar (o revisa el volumen de la pestaña).'
+          : 'No se pudo reproducir el audio. Pulsa Reanudar para reintentar.',
       );
       setState((prev) => {
         if (prev.phase !== 'clip' || prev.timer.endsAt === null) return prev;
