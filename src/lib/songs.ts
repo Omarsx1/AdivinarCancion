@@ -88,27 +88,28 @@ export function buildOptions(
       : undefined;
 
   if (entry !== undefined) {
-    const sameArtist = catalog.filter(
+    const sameGenre = catalog.filter(
       (candidate) =>
-        normalize(candidate.artist) === normalize(entry.artist) &&
-        normalize(candidate.title) !== normalize(correct.title),
+        candidate.genre === entry.genre &&
+        normalize(candidate.artist) !== normalize(entry.artist),
     );
-    for (const candidate of shuffle(sameArtist, random).slice(0, 2)) {
-      add(songLabel(candidate), `cat:${candidate.artist}:${candidate.title}`);
-    }
-
-    if (distractors.length < 3) {
-      const sameGenre = catalog.filter(
-        (candidate) =>
-          candidate.genre === entry.genre &&
-          normalize(candidate.artist) !== normalize(entry.artist) &&
-          (gender === null || artistGender(candidate.artist) === gender),
-      );
-      for (const candidate of shuffle(sameGenre, random)) {
+    const usedArtists = new Set([normalize(correct.artist)]);
+    const takeFrom = (list: readonly CatalogEntry[]) => {
+      for (const candidate of shuffle(list, random)) {
+        if (distractors.length === 3) return;
+        const artistKey = normalize(candidate.artist);
+        if (usedArtists.has(artistKey)) continue;
+        usedArtists.add(artistKey);
         add(songLabel(candidate), `cat:${candidate.artist}:${candidate.title}`);
-        if (distractors.length === 3) break;
       }
-    }
+    };
+
+    takeFrom(
+      gender === null
+        ? sameGenre
+        : sameGenre.filter((candidate) => artistGender(candidate.artist) === gender),
+    );
+    if (distractors.length < 3) takeFrom(sameGenre);
   }
 
   if (distractors.length < 3) {

@@ -84,11 +84,12 @@ describe('buildOptions', () => {
     expect(positions.size).toBeGreaterThan(1);
   });
 
-  it('uses two songs by the same artist and one from the same genre', () => {
+  it('uses three different artists of the same genre, never the correct artist', () => {
     const options = buildOptions({ id: 'anitta', title: 'Envolver', artist: 'Anitta' }, pool);
     expect(options).toHaveLength(4);
     expect(new Set(options.map((option) => option.label)).size).toBe(4);
-    expect(options.filter((option) => option.label.startsWith('Anitta — '))).toHaveLength(3);
+    expect(options.filter((option) => option.label.startsWith('Anitta — '))).toHaveLength(1);
+    expect(new Set(options.map((option) => option.label.split(' — ')[0])).size).toBe(4);
   });
 
   it('matches the artist gender for the genre distractor', () => {
@@ -104,5 +105,11 @@ describe('buildOptions', () => {
           label.startsWith('Becky G — '),
       ),
     ).toBe(true);
+  });
+
+  it('does not repeat the correct artist in salsa', () => {
+    const options = buildOptions({ id: 'fr', title: 'La Rueda', artist: 'Frankie Ruiz' }, pool);
+    expect(options.filter((option) => option.label.startsWith('Frankie Ruiz — '))).toHaveLength(1);
+    expect(new Set(options.map((option) => option.label.split(' — ')[0])).size).toBe(4);
   });
 });
