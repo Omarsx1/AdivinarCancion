@@ -120,8 +120,17 @@ export function useSongHost(initialCode?: RoomCode) {
     const audio = ensureAudio();
     void audio.play().catch(() => {
       setAudioError(
-        'El navegador bloqueó el audio. Pulsa Reproducir otra vez (o revisa el volumen de la pestaña).',
+        'El navegador bloqueó el audio. Pulsa Reanudar para reintentar (o revisa el volumen de la pestaña).',
       );
+      setState((prev) => {
+        if (prev.phase !== 'clip' || prev.timer.endsAt === null) return prev;
+        clipRemainingRef.current = Math.max(500, prev.timer.endsAt - Date.now());
+        return {
+          ...prev,
+          timer: { endsAt: null, durationMs: prev.clipMs },
+          rev: prev.rev + 1,
+        };
+      });
     });
   }, [ensureAudio]);
 
