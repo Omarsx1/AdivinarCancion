@@ -44,18 +44,6 @@ interface HostState {
 const IDLE_TIMER: TimerState = { endsAt: null, durationMs: null };
 const AUDIO_FILE = /\.(mp3|m4a|mp4|aac|wav|ogg|oga|flac|opus|webm)$/i;
 
-/** Punto de inicio aleatorio: evita intro y final, para que cada ronda suene distinta. */
-function randomStartMs(song: Song, clipMs: number): number {
-  const duration = song.durationMs;
-  if (duration <= clipMs + 4000) return 0;
-  const min = Math.round(duration * 0.2);
-  const max = Math.max(
-    min,
-    Math.min(Math.round(duration * 0.75), duration - clipMs - 2000),
-  );
-  return Math.round(min + Math.random() * (max - min));
-}
-
 function toStandings(players: Record<string, Player>): StandingsEntry[] {
   return rankPlayers(Object.values(players)).map((player) => ({
     playerId: player.playerId,
@@ -145,9 +133,8 @@ export function useSongHost(initialCode?: RoomCode) {
 
       const options = buildOptions(song, current.songs);
       const audio = ensureAudio();
-      const startAt = song.startAtMs > 0 ? song.startAtMs : randomStartMs(song, current.clipMs);
       const maxStart = Math.max(0, song.durationMs - 5000);
-      const clampedStart = Math.min(startAt, maxStart);
+      const clampedStart = Math.min(song.startAtMs, maxStart);
       audio.src = song.url;
       audio.volume = volumeRef.current;
       try {
