@@ -177,6 +177,59 @@ export function knownSongMeta(title: string): KnownSongMeta | null {
   return KNOWN_SONG_META[normalizeName(title)] ?? null;
 }
 
+export interface FileMeta {
+  artist: string;
+  title: string;
+}
+
+/** Metadatos canónicos por nombre de archivo cargado. */
+export const FILE_META: Record<string, FileMeta> = {
+  'a thousand miles.mp3': { artist: 'Vanessa Carlton', title: 'A Thousand Miles' },
+  'anitta - envolver.mp3': { artist: 'Anitta', title: 'Envolver' },
+  'carly rae jepsen - call me maybe.mp3': {
+    artist: 'Carly Rae Jepsen',
+    title: 'Call Me Maybe',
+  },
+  'como un burro amarrado.mp3': {
+    artist: 'El Último de la Fila',
+    title: 'Como un Burro Amarrado',
+  },
+  'frankie ruiz - la rueda.mp3': { artist: 'Frankie Ruiz', title: 'La Rueda' },
+  'george michael - careless whisper.mp3': {
+    artist: 'George Michael',
+    title: 'Careless Whisper',
+  },
+  'git - la calle es su lugar.mp3': { artist: 'Git', title: 'La Calle Es Su Lugar' },
+  'jose jose - el triste.mp3': { artist: 'José José', title: 'El Triste' },
+  'la traviesa.mp3': { artist: 'DJ El Cuervo', title: 'La Traviesa' },
+  'last christmas.mp3': { artist: 'Wham!', title: 'Last Christmas' },
+  'milky - just the way you are.mp3': { artist: 'Milky', title: 'Just the Way You Are' },
+  'partido en dos.mp3': { artist: 'La Única Tropical', title: 'Partido en Dos' },
+  'shakira - bzrp music sessions 53.mp3': {
+    artist: 'Shakira',
+    title: 'BZRP Music Sessions 53',
+  },
+};
+
+export function knownFileMeta(fileName: string): FileMeta | null {
+  return FILE_META[normalizeName(fileName)] ?? null;
+}
+
+/** Deja mayúsculas/minúsculas uniformes cuando el origen viene todo en un caso. */
+export function normalizeDisplay(value: string): string {
+  const trimmed = value.trim().replace(/\s+/g, ' ');
+  const letters = trimmed.replace(/[^\p{L}]/gu, '');
+  if (letters.length === 0) return trimmed;
+  const upper = letters === letters.toUpperCase();
+  const lower = letters === letters.toLowerCase();
+  if (!upper && !lower) return trimmed;
+  return trimmed
+    .toLowerCase()
+    .replace(/(^|[\s\-''(])(\p{L})/gu, (_match, separator: string, letter: string) =>
+      separator + letter.toUpperCase(),
+    );
+}
+
 export function normalizeName(value: string): string {
   return value
     .normalize('NFD')

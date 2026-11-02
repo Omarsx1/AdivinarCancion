@@ -6,7 +6,7 @@ import { generateRoomCode } from '../lib/roomCode';
 import { POINTS_PER_HIT, rankPlayers } from '../lib/scoring';
 import { buildOptions, parseSongFileName } from '../lib/songs';
 import { getSupabaseClient, MISSING_CONFIG_MESSAGE } from '../lib/supabase';
-import { knownSongMeta } from '../data/songCatalog';
+import { knownFileMeta, knownSongMeta, normalizeDisplay } from '../data/songCatalog';
 import type {
   AnswerRecord,
   Player,
@@ -403,10 +403,15 @@ export function useSongHost(initialCode?: RoomCode) {
       const added: Song[] = list.map((file) => {
         const parsed = parseSongFileName(file.name);
         const meta = knownSongMeta(parsed.title);
+        const fileMeta = knownFileMeta(file.name);
         return {
           id: crypto.randomUUID(),
-          title: parsed.title.length > 0 ? parsed.title : file.name,
-          artist: parsed.artist.length > 0 ? parsed.artist : (meta?.artist ?? ''),
+          title: normalizeDisplay(
+            fileMeta?.title ?? (parsed.title.length > 0 ? parsed.title : file.name),
+          ),
+          artist: normalizeDisplay(
+            fileMeta?.artist ?? (parsed.artist.length > 0 ? parsed.artist : (meta?.artist ?? '')),
+          ),
           fileName: file.name,
           durationMs: 0,
           startAtMs: 0,
@@ -437,10 +442,15 @@ export function useSongHost(initialCode?: RoomCode) {
         .map((name) => {
           const parsed = parseSongFileName(name);
           const meta = knownSongMeta(parsed.title);
+          const fileMeta = knownFileMeta(name);
           return {
             id: crypto.randomUUID(),
-            title: parsed.title.length > 0 ? parsed.title : name,
-            artist: parsed.artist.length > 0 ? parsed.artist : (meta?.artist ?? ''),
+            title: normalizeDisplay(
+              fileMeta?.title ?? (parsed.title.length > 0 ? parsed.title : name),
+            ),
+            artist: normalizeDisplay(
+              fileMeta?.artist ?? (parsed.artist.length > 0 ? parsed.artist : (meta?.artist ?? '')),
+            ),
             fileName: name,
             durationMs: 0,
             startAtMs: 0,

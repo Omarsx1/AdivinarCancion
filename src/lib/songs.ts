@@ -3,6 +3,7 @@ import {
   artistGender,
   detectLanguage,
   knownSongMeta,
+  normalizeDisplay,
   normalizeName,
   SONG_CATALOG,
   type CatalogEntry,
@@ -64,8 +65,8 @@ export function parseSongFileName(fileName: string): ParsedSongName {
 }
 
 export function songLabel(song: { title: string; artist: string }): string {
-  const artist = song.artist.trim();
-  const title = song.title.trim();
+  const artist = normalizeDisplay(song.artist);
+  const title = normalizeDisplay(song.title);
   // taste-skill-ignore: el guion largo separa artista y título en la lista, no es prosa.
   return artist.length > 0 ? `${artist} — ${title}` : title;
 }
