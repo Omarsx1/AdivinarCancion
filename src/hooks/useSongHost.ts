@@ -4,7 +4,7 @@ import { collectPresence, createSongChannel, HOST_PRESENCE_KEY } from '../lib/re
 import { isAnswerPayload } from '../lib/realtime/protocol';
 import { generateRoomCode } from '../lib/roomCode';
 import { POINTS_PER_HIT, rankPlayers } from '../lib/scoring';
-import { buildOptions, parseSongFileName } from '../lib/songs';
+import { buildOptions, parseSongFileName, shuffle } from '../lib/songs';
 import { getSupabaseClient, MISSING_CONFIG_MESSAGE } from '../lib/supabase';
 import { knownFileMeta, knownSongMeta, normalizeDisplay } from '../data/songCatalog';
 import type {
@@ -135,12 +135,13 @@ export function useSongHost(initialCode?: RoomCode) {
   }, [ensureAudio]);
 
   const startSong = useCallback(
-    (index: number) => {
+    (index: number, list?: Song[]) => {
       const current = stateRef.current;
-      const song = current.songs[index];
+      const songs = list ?? current.songs;
+      const song = songs[index];
       if (song === undefined) return;
 
-      const options = buildOptions(song, current.songs);
+      const options = buildOptions(song, songs);
       const audio = ensureAudio();
       const maxStart = Math.max(0, song.durationMs - 5000);
       const clampedStart = Math.min(song.startAtMs, maxStart);
@@ -160,7 +161,7 @@ export function useSongHost(initialCode?: RoomCode) {
         ...prev,
         phase: 'clip',
         currentIndex: index,
-        songs: prev.songs.map((item) =>
+        songs: songs.map((item) =>
           item.id === song.id ? { ...item, startAtMs: clampedStart } : item,
         ),
         options,
@@ -521,7 +522,9 @@ export function useSongHost(initialCode?: RoomCode) {
     const current = stateRef.current;
     if (current.songs.length < MIN_SONGS) return;
     if (current.phase !== 'lobby' && current.phase !== 'podium') return;
-    startSong(0);
+    const shuffled = shuffle(current.songs);
+    setState((prev) => ({ ...prev, songs: shuffled, rev: prev.rev + 1 }));
+    startSong(0, shuffled);
   }, [startSong]);
 
   const playSongAt = useCallback(

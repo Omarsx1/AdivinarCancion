@@ -51,6 +51,7 @@ Requiere Node 22.23 o superior (Astro 7).
 - 4 opciones por canción: la correcta y 3 artistas distintos, del mismo idioma, género y género musical cuando el catálogo lo permite (`src/data/songCatalog.ts`). Nunca repite al artista correcto.
 - Clip de 10/15/20/25 segundos (20 por defecto), tomado de un punto aleatorio entre el 20 % y el 75 % de la canción.
 - 5 segundos para responder (5/8/10).
+- El orden de las canciones se baraja al empezar cada partida.
 - **Desde el inicio**: reinicia el clip en 0:00 para usar intros instrumentales.
 - +100 puntos por acierto. Desempate: aciertos y luego tiempo acumulado de respuesta.
 - Los títulos se leen de `Artista - Título.mp3` y se pueden editar en el panel.
