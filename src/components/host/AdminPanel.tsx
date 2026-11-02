@@ -166,7 +166,7 @@ export function AdminPanel({
               <Choice
                 label="Tiempo para responder"
                 value={answerSeconds}
-                options={[8, 10, 15]}
+                options={[5, 8, 10]}
                 suffix="s"
                 onChange={onAnswerSeconds}
               />

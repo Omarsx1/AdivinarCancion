@@ -49,7 +49,7 @@ Requiere Node 22.23 o superior (Astro 7).
 ## Reglas
 
 - 4 opciones por canción: la correcta y 3 distractores del pool cargado (mínimo 4 canciones).
-- 20 segundos de clip (15/20/25) y 10 segundos para responder (8/10/15).
+- 20 segundos de clip (15/20/25) y 5 segundos para responder (5/8/10).
 - +100 puntos por acierto. Desempate: aciertos y luego tiempo acumulado de respuesta.
 - Los títulos se leen de `Artista - Título.mp3` y se pueden editar en el panel.
 

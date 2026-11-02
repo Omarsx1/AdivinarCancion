@@ -21,7 +21,7 @@ import type {
 
 export const MIN_SONGS = 4;
 export const DEFAULT_CLIP_SECONDS = 20;
-export const DEFAULT_ANSWER_SECONDS = 10;
+export const DEFAULT_ANSWER_SECONDS = 5;
 
 export type ConnectionStatus = 'connecting' | 'online' | 'offline' | 'unconfigured';
 
