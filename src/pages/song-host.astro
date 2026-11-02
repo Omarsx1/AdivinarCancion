@@ -1,0 +1,8 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import { SongHostContainer } from '../components/host/SongHostContainer';
+---
+
+<MainLayout title="Host — Adivina la canción">
+  <SongHostContainer client:only="react" />
+</MainLayout>

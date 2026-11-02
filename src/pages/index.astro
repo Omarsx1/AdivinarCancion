@@ -1,0 +1,183 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+
+const breachpartyUrl = (import.meta.env.PUBLIC_BREACHPARTY_URL ?? '').trim();
+
+const steps = [
+  {
+    title: 'Carga los MP3',
+    body: 'Desde la Mac, en el panel de administración. Nada se sube: el audio vive en el navegador.',
+  },
+  {
+    title: 'Comparte la pestaña con audio',
+    body: 'En Teams elige la pestaña, no la ventana. Si compartes sin sonido, la sala no escucha nada.',
+  },
+  {
+    title: 'La sala responde',
+    body: 'Cada celular recibe cuatro canciones y un temporizador. Cien puntos por acierto.',
+  },
+];
+---
+
+<MainLayout>
+  <div class="min-h-dvh bg-night">
+    <div class="mx-auto w-full max-w-[1400px] px-5 sm:px-8">
+      <header class="flex items-center justify-between gap-4 py-5">
+        <a href="/" class="poster text-lg sm:text-xl">Adivina la canción</a>
+        <a
+          href="/song-play"
+          class="rounded-full bg-paper px-5 py-3 text-sm font-bold text-night transition-colors hover:bg-haze"
+        >
+          Unirme
+        </a>
+      </header>
+
+      <section class="relative grid items-end gap-8 pt-6 pb-16 lg:grid-cols-12 lg:pt-12">
+        <div class="lg:col-span-7">
+          <h1 class="poster text-[clamp(2.75rem,8vw,6.5rem)]">
+            Pon el clip.<br />
+            Adivina.
+          </h1>
+          <p class="mt-7 max-w-[36ch] text-lg sm:text-xl">
+            El host pone veinte segundos de una canción en su Mac. La sala escucha por Teams y
+            responde desde el celular.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a
+              href="/song-host"
+              class="inline-flex h-14 items-center rounded-full bg-sun px-7 text-lg font-bold text-ink transition-colors hover:bg-[#ffe873]"
+            >
+              Abrir la sala
+            </a>
+            <a
+              href="/song-play"
+              class="inline-flex h-14 items-center rounded-full bg-paper px-7 text-lg font-bold text-night transition-colors hover:bg-haze"
+            >
+              Entrar con código
+            </a>
+          </div>
+        </div>
+
+        <div class="flex justify-center lg:col-span-5 lg:justify-end">
+          <svg
+            viewBox="0 0 400 400"
+            class="w-[min(72vw,400px)] -rotate-6"
+            role="img"
+            aria-label="Un disco de vinilo"
+          >
+            <circle cx="190" cy="210" r="170" fill="#0a0a0a" />
+            <circle cx="190" cy="210" r="136" fill="none" stroke="#ffffff" stroke-opacity="0.2" stroke-width="2" />
+            <circle cx="190" cy="210" r="104" fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-width="2" />
+            <circle cx="190" cy="210" r="74" fill="none" stroke="#ffffff" stroke-opacity="0.1" stroke-width="2" />
+            <circle cx="190" cy="210" r="60" fill="#f7dd47" />
+            <circle cx="190" cy="210" r="8" fill="#0a0a0a" />
+            <path d="M368 66 L304 268" stroke="#ffffff" stroke-width="8" stroke-linecap="round" />
+            <circle cx="368" cy="66" r="17" fill="#f7dd47" />
+            <circle cx="368" cy="66" r="6" fill="#0a0a0a" />
+            <g transform="translate(300 276) rotate(24)">
+              <rect x="-16" y="-8" width="32" height="16" rx="6" fill="#ffffff" />
+              <rect x="-4" y="6" width="8" height="11" rx="3" fill="#0a0a0a" />
+            </g>
+          </svg>
+        </div>
+      </section>
+    </div>
+
+    <section class="bg-sun text-ink">
+      <div class="mx-auto max-w-[1400px] px-5 py-16 sm:px-8">
+        <h2 class="display max-w-[22ch] text-4xl sm:text-6xl">
+          Veinte segundos. Cuatro canciones. Un ganador.
+        </h2>
+        <p class="mt-5 max-w-[52ch] text-lg">
+          Una ronda dura menos de un minuto. Con catorce personas y quince canciones, la partida
+          entera cabe en siete minutos.
+        </p>
+      </div>
+    </section>
+
+    <section class="bg-ink text-paper">
+      <div class="mx-auto grid max-w-[1400px] gap-10 px-5 py-16 sm:px-8 lg:grid-cols-12">
+        <h2 class="display text-4xl sm:text-6xl lg:col-span-4">Cómo funciona</h2>
+        <ol class="space-y-8 lg:col-span-8">
+          {
+            steps.map((step, index) => (
+              <li class="grid gap-2 sm:grid-cols-[3rem_1fr] sm:gap-6">
+                <span class="text-3xl font-black text-sun">{index + 1}</span>
+                <div>
+                  <h3 class="text-2xl font-bold">{step.title}</h3>
+                  <p class="mt-1 max-w-[52ch] text-base text-haze">{step.body}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <section class="bg-night">
+      <div class="mx-auto grid max-w-[1400px] gap-8 px-5 py-16 sm:px-8 lg:grid-cols-12">
+        <h2 class="display text-4xl sm:text-6xl lg:col-span-4">Elige el juego</h2>
+
+        <div class="grid gap-4 sm:grid-cols-2 lg:col-span-8">
+          <article class="flex flex-col gap-3 rounded-[28px] bg-paper p-6 text-ink">
+            <h3 class="display text-3xl">Adivina la canción</h3>
+            <p class="text-base text-night/75">
+              Clips de veinte segundos, cuatro opciones y un ranking que se arma canción por canción.
+            </p>
+            <div class="mt-auto flex flex-wrap gap-2 pt-3">
+              <a
+                href="/song-host"
+                class="rounded-full bg-sun px-5 py-3 text-sm font-bold text-ink"
+              >
+                Abrir como host
+              </a>
+              <a
+                href="/song-play"
+                class="rounded-full bg-night px-5 py-3 text-sm font-bold text-paper"
+              >
+                Entrar a jugar
+              </a>
+            </div>
+          </article>
+
+          <article class="flex flex-col gap-3 rounded-[28px] bg-flamingo p-6 text-ink">
+            <h3 class="display text-3xl">BreachParty</h3>
+            <p class="text-base">
+              Prompts anónimos, duelos y votación en vivo para el equipo de Seguridad de la
+              Información.
+            </p>
+            <div class="mt-auto pt-3">
+              {
+                breachpartyUrl.length > 0 ? (
+                  <a
+                    href={breachpartyUrl}
+                    class="inline-flex rounded-full bg-ink px-5 py-3 text-sm font-bold text-paper"
+                  >
+                    Abrir BreachParty
+                  </a>
+                ) : (
+                  <p class="text-sm font-bold">Se abre desde la app de BreachParty</p>
+                )
+              }
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <footer class="bg-flamingo text-ink">
+      <div class="mx-auto flex max-w-[1400px] flex-wrap items-end justify-between gap-6 px-5 py-14 sm:px-8">
+        <p class="poster text-[clamp(2.4rem,8vw,7rem)]">Nos vemos en la sala.</p>
+        <a
+          href="/song-host"
+          class="inline-flex h-14 items-center rounded-full bg-ink px-7 text-lg font-bold text-paper"
+        >
+          Abrir la sala
+        </a>
+      </div>
+      <div class="mx-auto max-w-[1400px] px-5 pb-8 text-sm font-bold sm:px-8">
+        Sin subir archivos. Sin cuentas. Solo la pestaña, el audio y la sala.
+      </div>
+    </footer>
+  </div>
+</MainLayout>

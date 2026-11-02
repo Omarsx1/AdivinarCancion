@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+@theme {
+  --color-night: #1423b8;
+  --color-depth: #0f1c9e;
+  --color-ink: #0a0a0a;
+  --color-paper: #ffffff;
+  --color-sun: #f7dd47;
+  --color-flamingo: #e9479f;
+  --color-mint: #1fc27a;
+  --color-haze: #b4bcf0;
+
+  --font-sans: "Chivo", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Chivo", "Helvetica Neue", Arial, sans-serif;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: var(--color-night);
+    color: var(--color-paper);
+    font-family: var(--font-sans);
+    font-size: 18px;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-sun);
+    color: var(--color-ink);
+  }
+
+  button {
+    font-family: inherit;
+  }
+}
+
+/* Un solo gesto tipográfico: cartel de calle. */
+.poster {
+  font-family: var(--font-display);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.045em;
+  line-height: 0.88;
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin-slow {
+  animation: spin-slow 7s linear infinite;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rise {
+  animation: rise 0.45s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin-slow,
+  .rise {
+    animation: none;
+  }
+}

@@ -1,0 +1,10 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import { SongPlayerContainer } from '../components/player/SongPlayerContainer';
+
+const room = (Astro.url.searchParams.get('room') ?? '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4);
+---
+
+<MainLayout title="Jugar — Adivina la canción">
+  <SongPlayerContainer client:only="react" initialCode={room.length === 4 ? room : null} />
+</MainLayout>
