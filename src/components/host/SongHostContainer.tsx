@@ -105,9 +105,11 @@ export function SongHostContainer({ initialCode }: SongHostContainerProps) {
           clipSeconds={Math.round(host.clipMs / 1000)}
           answerSeconds={Math.round(host.answerMs / 1000)}
           volume={host.volume}
+          instrumental={host.instrumental}
           onClipSeconds={host.setClipSeconds}
           onAnswerSeconds={host.setAnswerSeconds}
           onVolume={host.setVolume}
+          onInstrumental={host.setInstrumental}
           onAddFiles={host.addFiles}
           onUpdate={host.updateSong}
           onRemove={host.removeSong}

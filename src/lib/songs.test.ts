@@ -83,4 +83,11 @@ describe('buildOptions', () => {
     }
     expect(positions.size).toBeGreaterThan(1);
   });
+
+  it('uses two songs by the same artist and one from the same genre', () => {
+    const options = buildOptions({ id: 'anitta', title: 'Envolver', artist: 'Anitta' }, pool);
+    expect(options).toHaveLength(4);
+    expect(new Set(options.map((option) => option.label)).size).toBe(4);
+    expect(options.filter((option) => option.label.startsWith('Anitta — '))).toHaveLength(3);
+  });
 });

@@ -1,4 +1,4 @@
-import { ArrowRight, Eye, Pause, Play, SkipForward } from 'lucide-react';
+import { ArrowRight, Eye, Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 import type { Countdown } from '../../hooks/useCountdown';
 import { formatDuration, formatSeconds } from '../../lib/format';
 import type { RevealInfo, Song, SongOption, SongPhase, StandingsEntry } from '../../types/song';
@@ -182,6 +182,12 @@ function ClipView(props: NowPlayingProps) {
                     Pausar
                   </Button>
                 ))}
+              {isClip && (
+                <Button variant="secondary" onClick={() => props.onSeek(0)}>
+                  <RotateCcw size={17} />
+                  Desde el inicio
+                </Button>
+              )}
               <Button variant="primary" onClick={props.onReveal}>
                 <Eye size={17} />
                 Revelar

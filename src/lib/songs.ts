@@ -1,3 +1,5 @@
+import { SONG_CATALOG, type CatalogEntry } from '../data/songCatalog';
+
 export interface ParsedSongName {
   title: string;
   artist: string;
@@ -60,19 +62,64 @@ export function buildOptions(
   correct: OptionSource,
   pool: readonly OptionSource[],
   random: () => number = Math.random,
+  catalog: readonly CatalogEntry[] = SONG_CATALOG,
 ): SongOption[] {
   const correctLabel = songLabel(correct);
   const usedLabels = new Set([correctLabel]);
   const distractors: SongOption[] = [];
 
-  for (const candidate of shuffle(pool, random)) {
-    if (candidate.id === correct.id) continue;
-    const label = songLabel(candidate);
-    if (usedLabels.has(label)) continue;
+  const add = (label: string, id: string) => {
+    if (usedLabels.has(label)) return;
     usedLabels.add(label);
-    distractors.push({ id: candidate.id, label });
-    if (distractors.length === 3) break;
+    distractors.push({ id, label });
+  };
+
+  const normalize = (value: string) =>
+    value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+
+  const entry =
+    correct.artist.trim().length > 0
+      ? catalog.find((candidate) => normalize(candidate.artist) === normalize(correct.artist))
+      : undefined;
+
+  if (entry !== undefined) {
+    const sameArtist = catalog.filter(
+      (candidate) =>
+        normalize(candidate.artist) === normalize(entry.artist) &&
+        normalize(candidate.title) !== normalize(correct.title),
+    );
+    for (const candidate of shuffle(sameArtist, random).slice(0, 2)) {
+      add(songLabel(candidate), `cat:${candidate.artist}:${candidate.title}`);
+    }
+
+    if (distractors.length < 3) {
+      const sameGenre = catalog.filter(
+        (candidate) =>
+          candidate.genre === entry.genre &&
+          normalize(candidate.artist) !== normalize(entry.artist),
+      );
+      for (const candidate of shuffle(sameGenre, random)) {
+        add(songLabel(candidate), `cat:${candidate.artist}:${candidate.title}`);
+        if (distractors.length === 3) break;
+      }
+    }
   }
 
-  return shuffle([{ id: correct.id, label: correctLabel }, ...distractors], random);
+  if (distractors.length < 3) {
+    for (const candidate of shuffle(pool, random)) {
+      if (candidate.id === correct.id) continue;
+      add(songLabel(candidate), candidate.id);
+      if (distractors.length === 3) break;
+    }
+  }
+
+  return shuffle(
+    [{ id: correct.id, label: correctLabel }, ...distractors.slice(0, 3)],
+    random,
+  );
 }
+
