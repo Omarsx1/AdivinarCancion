@@ -159,7 +159,7 @@ export function AdminPanel({
               <Choice
                 label="Clip por canción"
                 value={clipSeconds}
-                options={[15, 20, 25]}
+                options={[10, 15, 20, 25]}
                 suffix="s"
                 onChange={onClipSeconds}
               />
