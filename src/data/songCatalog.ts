@@ -4,6 +4,66 @@ export interface CatalogEntry {
   genre: string;
 }
 
+export type ArtistGender = 'female' | 'male' | 'group';
+
+export const ARTIST_GENDER: Record<string, ArtistGender> = {
+  Anitta: 'female',
+  'Karol G': 'female',
+  'Bad Bunny': 'male',
+  Shakira: 'female',
+  Maluma: 'male',
+  'J Balvin': 'male',
+  Ozuna: 'male',
+  'Daddy Yankee': 'male',
+  Feid: 'male',
+  'Becky G': 'female',
+  'José José': 'male',
+  'Juan Gabriel': 'male',
+  'Camilo Sesto': 'male',
+  Selena: 'female',
+  'Celia Cruz': 'female',
+  'Frankie Ruiz': 'male',
+  'Eddie Santiago': 'male',
+  'Héctor Lavoe': 'male',
+  'Rubén Blades': 'male',
+  'Soda Stereo': 'group',
+  'Los Prisioneros': 'group',
+  Queen: 'group',
+  ABBA: 'group',
+  'Michael Jackson': 'male',
+  'George Michael': 'male',
+  'The Beatles': 'group',
+  'Bee Gees': 'group',
+  'Gloria Gaynor': 'female',
+  'Elvis Presley': 'male',
+  'Chabuca Granda': 'female',
+  'Arturo Cavero': 'male',
+  'Los Mirlos': 'group',
+  'Lucha Reyes': 'female',
+  'Dua Lipa': 'female',
+  'The Weeknd': 'male',
+  'Billie Eilish': 'female',
+  'Harry Styles': 'male',
+  Coldplay: 'group',
+  'Bruno Mars': 'male',
+  'Olivia Rodrigo': 'female',
+};
+
+export function normalizeName(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+export function artistGender(artist: string): ArtistGender | null {
+  const key = Object.keys(ARTIST_GENDER).find(
+    (name) => normalizeName(name) === normalizeName(artist),
+  );
+  return key === undefined ? null : (ARTIST_GENDER[key] ?? null);
+}
+
 /** Canciones conocidas para armar distractores creíbles sin necesitar el audio. */
 export const SONG_CATALOG: CatalogEntry[] = [
   { artist: 'Anitta', title: 'Envolver', genre: 'reggaeton' },

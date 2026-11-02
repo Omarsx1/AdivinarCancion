@@ -1,4 +1,9 @@
-import { SONG_CATALOG, type CatalogEntry } from '../data/songCatalog';
+import {
+  artistGender,
+  normalizeName,
+  SONG_CATALOG,
+  type CatalogEntry,
+} from '../data/songCatalog';
 
 export interface ParsedSongName {
   title: string;
@@ -74,12 +79,8 @@ export function buildOptions(
     distractors.push({ id, label });
   };
 
-  const normalize = (value: string) =>
-    value
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .trim();
+  const normalize = normalizeName;
+  const gender = artistGender(correct.artist);
 
   const entry =
     correct.artist.trim().length > 0
@@ -100,7 +101,8 @@ export function buildOptions(
       const sameGenre = catalog.filter(
         (candidate) =>
           candidate.genre === entry.genre &&
-          normalize(candidate.artist) !== normalize(entry.artist),
+          normalize(candidate.artist) !== normalize(entry.artist) &&
+          (gender === null || artistGender(candidate.artist) === gender),
       );
       for (const candidate of shuffle(sameGenre, random)) {
         add(songLabel(candidate), `cat:${candidate.artist}:${candidate.title}`);

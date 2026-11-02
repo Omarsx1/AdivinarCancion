@@ -90,4 +90,19 @@ describe('buildOptions', () => {
     expect(new Set(options.map((option) => option.label)).size).toBe(4);
     expect(options.filter((option) => option.label.startsWith('Anitta — '))).toHaveLength(3);
   });
+
+  it('matches the artist gender for the genre distractor', () => {
+    const options = buildOptions({ id: 'anitta', title: 'Envolver', artist: 'Anitta' }, pool);
+    const labels = options.map((option) => option.label);
+    expect(labels.some((label) => label.startsWith('Ozuna — '))).toBe(false);
+    expect(labels.some((label) => label.startsWith('Daddy Yankee — '))).toBe(false);
+    expect(
+      labels.some(
+        (label) =>
+          label.startsWith('Karol G — ') ||
+          label.startsWith('Shakira — ') ||
+          label.startsWith('Becky G — '),
+      ),
+    ).toBe(true);
+  });
 });
