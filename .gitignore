@@ -34,3 +34,10 @@ odd/
 .junie/
 .taste-skill/
 .pnpm-store/
+
+# Commercial audio: local only, never committed
+public/canciones/*.mp3
+public/canciones/*.m4a
+public/canciones/*.wav
+public/canciones/*.ogg
+public/canciones/manifest.json

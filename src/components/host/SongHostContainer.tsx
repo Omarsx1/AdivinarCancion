@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useCountdown } from '../../hooks/useCountdown';
 import { MIN_SONGS, useSongHost } from '../../hooks/useSongHost';
 import { buildPlayerUrl } from '../../lib/roomCode';
@@ -15,6 +15,13 @@ export function SongHostContainer({ initialCode }: SongHostContainerProps) {
   const host = useSongHost(initialCode);
   const timer = useCountdown(host.timer, null);
   const [adminOpen, setAdminOpen] = useState(true);
+  const bundledLoaded = useRef(false);
+
+  useEffect(() => {
+    if (bundledLoaded.current) return;
+    bundledLoaded.current = true;
+    void host.loadBundledSongs();
+  }, [host.loadBundledSongs]);
 
   const playerUrl = useMemo(() => {
     const configured = (import.meta.env.PUBLIC_PLAY_ORIGIN ?? '').trim();

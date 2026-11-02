@@ -8,7 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "test": "vitest run"
+    "test": "vitest run",
+    "songs:manifest": "node scripts/song-manifest.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^7.1.1",

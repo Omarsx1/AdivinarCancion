@@ -417,6 +417,40 @@ export function useSongHost(initialCode?: RoomCode) {
     [probeDuration],
   );
 
+  /** Carga la carpeta public/canciones (solo si existe manifest.json). */
+  const loadBundledSongs = useCallback(async (): Promise<number> => {
+    try {
+      const response = await fetch('/canciones/manifest.json', { cache: 'no-store' });
+      if (!response.ok) return 0;
+      const data = (await response.json()) as { songs?: unknown };
+      const names = Array.isArray(data.songs)
+        ? data.songs.filter((name): name is string => typeof name === 'string' && name.length > 0)
+        : [];
+      const existing = new Set(stateRef.current.songs.map((song) => song.fileName));
+      const added: Song[] = names
+        .filter((name) => !existing.has(name))
+        .map((name) => {
+          const parsed = parseSongFileName(name);
+          return {
+            id: crypto.randomUUID(),
+            title: parsed.title.length > 0 ? parsed.title : name,
+            artist: parsed.artist,
+            fileName: name,
+            durationMs: 0,
+            startAtMs: 0,
+            url: `/canciones/${encodeURIComponent(name)}`,
+            addedAt: Date.now(),
+          };
+        });
+      if (added.length === 0) return 0;
+      setState((prev) => ({ ...prev, songs: [...prev.songs, ...added], rev: prev.rev + 1 }));
+      for (const song of added) probeDuration(song);
+      return added.length;
+    } catch {
+      return 0;
+    }
+  }, [probeDuration]);
+
   const updateSong = useCallback((id: string, patch: { title?: string; artist?: string }) => {
     setState((prev) => ({
       ...prev,
@@ -602,6 +636,7 @@ export function useSongHost(initialCode?: RoomCode) {
     dismissAudioError: () => setAudioError(null),
     canStart: state.songs.length >= MIN_SONGS,
     addFiles,
+    loadBundledSongs,
     updateSong,
     removeSong,
     moveSong,
