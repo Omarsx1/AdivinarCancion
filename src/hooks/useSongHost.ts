@@ -123,7 +123,11 @@ export function useSongHost(initialCode?: RoomCode) {
     playTokenRef.current = token;
     void audio.play().catch((error: unknown) => {
       if (token !== playTokenRef.current) return;
-      const name = error instanceof DOMException ? error.name : '';
+      const name =
+        typeof error === 'object' && error !== null && 'name' in error
+          ? String((error as { name: unknown }).name)
+          : '';
+      console.warn('audio play failed', name, error);
       if (name === 'AbortError') return;
       setAudioError(
         name === 'NotAllowedError'
@@ -154,6 +158,7 @@ export function useSongHost(initialCode?: RoomCode) {
       const maxStart = Math.max(0, song.durationMs - 5000);
       const clampedStart = Math.min(song.startAtMs, maxStart);
       audio.src = song.url;
+      audio.load();
       audio.volume = volumeRef.current;
       try {
         audio.currentTime = clampedStart / 1000;
