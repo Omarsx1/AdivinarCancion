@@ -65,6 +65,11 @@ export const ARTIST_GENDER: Record<string, ArtistGender> = {
   'Los Ángeles Azules': 'group',
   'Los Bukis': 'group',
   'Grupo 5': 'group',
+  'Carly Rae Jepsen': 'female',
+  Git: 'group',
+  'Los Fabulosos Cadillacs': 'group',
+  'Enanitos Verdes': 'group',
+  'Hombres G': 'group',
 };
 
 export const ARTIST_LANGUAGE: Record<string, 'es' | 'en'> = {
@@ -126,6 +131,11 @@ export const ARTIST_LANGUAGE: Record<string, 'es' | 'en'> = {
   'Los Ángeles Azules': 'es',
   'Los Bukis': 'es',
   'Grupo 5': 'es',
+  'Carly Rae Jepsen': 'en',
+  Git: 'es',
+  'Los Fabulosos Cadillacs': 'es',
+  'Enanitos Verdes': 'es',
+  'Hombres G': 'es',
 };
 
 export function artistLanguage(artist: string): 'es' | 'en' | null {
@@ -398,4 +408,19 @@ export const SONG_CATALOG: CatalogEntry[] = [
   { artist: 'Grupo 5', title: 'Motor y Motivo', genre: 'cumbia' },
   { artist: 'Grupo 5', title: 'Te Vas', genre: 'cumbia' },
   { artist: 'Grupo 5', title: 'Mujer Infiel', genre: 'cumbia' },
+  { artist: 'Carly Rae Jepsen', title: 'Call Me Maybe', genre: 'pop-modern' },
+  { artist: 'Carly Rae Jepsen', title: 'I Really Like You', genre: 'pop-modern' },
+  { artist: 'Carly Rae Jepsen', title: 'Good Time', genre: 'pop-modern' },
+  { artist: 'Git', title: 'La Calle Es Su Lugar', genre: 'rock-pop' },
+  { artist: 'Git', title: 'No Te Portes Mal', genre: 'rock-pop' },
+  { artist: 'Git', title: 'Tiempo', genre: 'rock-pop' },
+  { artist: 'Los Fabulosos Cadillacs', title: 'Matador', genre: 'rock-pop' },
+  { artist: 'Los Fabulosos Cadillacs', title: 'Siguiendo la Luna', genre: 'rock-pop' },
+  { artist: 'Los Fabulosos Cadillacs', title: 'Mal Bicho', genre: 'rock-pop' },
+  { artist: 'Enanitos Verdes', title: 'Lamento Boliviano', genre: 'rock-pop' },
+  { artist: 'Enanitos Verdes', title: 'La Muralla Verde', genre: 'rock-pop' },
+  { artist: 'Enanitos Verdes', title: 'Guapa', genre: 'rock-pop' },
+  { artist: 'Hombres G', title: 'Devuélveme a mi Chica', genre: 'rock-pop' },
+  { artist: 'Hombres G', title: 'Venezia', genre: 'rock-pop' },
+  { artist: 'Hombres G', title: 'El Ataque de las Chicas Cocodrilo', genre: 'rock-pop' },
 ];
