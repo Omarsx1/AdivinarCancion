@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { Check, LogOut } from 'lucide-react';
 import { useCountdown } from '../../hooks/useCountdown';
 import { useSongPlayer } from '../../hooks/useSongPlayer';
+import { isValidRoomCode, normalizeRoomCode } from '../../lib/roomCode';
 import { playersLabel } from '../../lib/format';
 import type { SongOption, SongView } from '../../types/song';
 import { Button } from '../ui/Button';
@@ -87,13 +89,20 @@ function RevealCard({
 }
 
 export function SongPlayerContainer({ initialCode }: SongPlayerContainerProps) {
-  const player = useSongPlayer(initialCode);
+  const [code] = useState<string | null>(() => {
+    if (initialCode !== null) return initialCode;
+    if (typeof window === 'undefined') return null;
+    const raw = new URLSearchParams(window.location.search).get('room') ?? '';
+    const normalized = normalizeRoomCode(raw);
+    return isValidRoomCode(normalized) ? normalized : null;
+  });
+  const player = useSongPlayer(code);
   const timer = useCountdown(player.timer, player.sentAt);
 
   if (player.session === null) {
     return (
       <JoinScreen
-        initialCode={initialCode}
+        initialCode={code}
         configError={player.configError}
         onJoin={player.join}
       />

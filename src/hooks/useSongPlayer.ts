@@ -14,6 +14,7 @@ export interface PlayerSession {
 }
 
 const SESSION_PREFIX = 'adivinacancion.session';
+const LAST_ROOM_KEY = 'adivinacancion.lastRoom';
 const IDLE_TIMER = { endsAt: null, durationMs: null };
 
 function storageKey(roomCode: RoomCode): string {
@@ -38,10 +39,20 @@ function readSession(roomCode: RoomCode): PlayerSession | null {
   }
 }
 
+function readLastRoom(): RoomCode | null {
+  try {
+    const raw = window.localStorage.getItem(LAST_ROOM_KEY);
+    return raw !== null && raw.length > 0 ? raw : null;
+  } catch {
+    return null;
+  }
+}
+
 export function useSongPlayer(initialCode: RoomCode | null) {
-  const [session, setSession] = useState<PlayerSession | null>(() =>
-    initialCode === null ? null : readSession(initialCode),
-  );
+  const [session, setSession] = useState<PlayerSession | null>(() => {
+    const code = initialCode ?? readLastRoom();
+    return code === null ? null : readSession(code);
+  });
   const [broadcast, setBroadcast] = useState<StateBroadcast | null>(null);
   const [connection, setConnection] = useState<PlayerConnection>('connecting');
   const [hostOnline, setHostOnline] = useState(false);
@@ -114,11 +125,17 @@ export function useSongPlayer(initialCode: RoomCode | null) {
       };
       try {
         window.sessionStorage.setItem(storageKey(code), JSON.stringify(next));
+        window.localStorage.setItem(LAST_ROOM_KEY, code);
       } catch {
         // Sin sessionStorage igual se puede jugar; solo se pierde al recargar.
       }
       setMyAnswer(null);
       setSession(next);
+      try {
+        window.history.replaceState(null, '', `/song-play?room=${code}`);
+      } catch {
+        // La URL no se pudo actualizar; la sesión igual queda guardada.
+      }
     },
     [],
   );
@@ -127,6 +144,7 @@ export function useSongPlayer(initialCode: RoomCode | null) {
     const current = session;
     try {
       if (current !== null) window.sessionStorage.removeItem(storageKey(current.roomCode));
+      window.localStorage.removeItem(LAST_ROOM_KEY);
     } catch {
       // Ignorado a propósito.
     }
