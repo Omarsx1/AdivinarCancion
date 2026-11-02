@@ -53,7 +53,119 @@ export const ARTIST_GENDER: Record<string, ArtistGender> = {
   'David Bowie': 'male',
   'Phil Collins': 'male',
   'Eva Ayllón': 'female',
+  'Vanessa Carlton': 'female',
+  'Michelle Branch': 'female',
+  'Norah Jones': 'female',
+  'Avril Lavigne': 'female',
+  'Wham!': 'group',
+  'Mariah Carey': 'female',
+  'Ed Sheeran': 'male',
+  'Taylor Swift': 'female',
+  Adele: 'female',
+  'Los Ángeles Azules': 'group',
+  'Los Bukis': 'group',
+  'Grupo 5': 'group',
 };
+
+export const ARTIST_LANGUAGE: Record<string, 'es' | 'en'> = {
+  Anitta: 'es',
+  'Karol G': 'es',
+  'Bad Bunny': 'es',
+  Shakira: 'es',
+  Maluma: 'es',
+  'J Balvin': 'es',
+  Ozuna: 'es',
+  'Daddy Yankee': 'es',
+  Feid: 'es',
+  'Becky G': 'es',
+  'José José': 'es',
+  'Juan Gabriel': 'es',
+  'Camilo Sesto': 'es',
+  Selena: 'es',
+  'Celia Cruz': 'es',
+  'Frankie Ruiz': 'es',
+  'Eddie Santiago': 'es',
+  'Héctor Lavoe': 'es',
+  'Rubén Blades': 'es',
+  'Soda Stereo': 'es',
+  'Los Prisioneros': 'es',
+  Queen: 'en',
+  ABBA: 'en',
+  'Michael Jackson': 'en',
+  'George Michael': 'en',
+  'The Beatles': 'en',
+  'Bee Gees': 'en',
+  'Gloria Gaynor': 'en',
+  'Elvis Presley': 'en',
+  'Chabuca Granda': 'es',
+  'Arturo Cavero': 'es',
+  'Los Mirlos': 'es',
+  'Lucha Reyes': 'es',
+  'Dua Lipa': 'en',
+  'The Weeknd': 'en',
+  'Billie Eilish': 'en',
+  'Harry Styles': 'en',
+  Coldplay: 'en',
+  'Bruno Mars': 'en',
+  'Olivia Rodrigo': 'en',
+  'Óscar de León': 'es',
+  'Marc Anthony': 'es',
+  'Elton John': 'en',
+  'David Bowie': 'en',
+  'Phil Collins': 'en',
+  'Eva Ayllón': 'es',
+  'Vanessa Carlton': 'en',
+  'Michelle Branch': 'en',
+  'Norah Jones': 'en',
+  'Avril Lavigne': 'en',
+  'Wham!': 'en',
+  'Mariah Carey': 'en',
+  'Ed Sheeran': 'en',
+  'Taylor Swift': 'en',
+  Adele: 'en',
+  'Los Ángeles Azules': 'es',
+  'Los Bukis': 'es',
+  'Grupo 5': 'es',
+};
+
+export function artistLanguage(artist: string): 'es' | 'en' | null {
+  const key = Object.keys(ARTIST_LANGUAGE).find(
+    (name) => normalizeName(name) === normalizeName(artist),
+  );
+  return key === undefined ? null : (ARTIST_LANGUAGE[key] ?? null);
+}
+
+const ENGLISH_WORDS = new Set([
+  'the', 'you', 'your', 'love', 'last', 'christmas', 'thousand', 'miles', 'just', 'way', 'are',
+  'call', 'me', 'maybe', 'my', 'dont', 'cant', 'with', 'of', 'in', 'on', 'to', 'be', 'and', 'is',
+  'it', 'this', 'that', 'what', 'when', 'where', 'who', 'how', 'why', 'night', 'day', 'heart',
+  'girl', 'boy', 'baby', 'time', 'life', 'world', 'fire', 'rain', 'dance', 'dream', 'stay', 'go',
+  'come', 'home', 'good', 'bad', 'everything', 'nothing', 'always', 'never', 'hero', 'perfect', 'shape',
+]);
+
+export function detectLanguage(text: string): 'es' | 'en' {
+  const words = normalizeName(text).split(/[^a-z]+/).filter(Boolean);
+  return words.some((word) => ENGLISH_WORDS.has(word)) ? 'en' : 'es';
+}
+
+export interface KnownSongMeta {
+  artist?: string;
+  genre?: string;
+}
+
+export const KNOWN_SONG_META: Record<string, KnownSongMeta> = {
+  'a thousand miles': { artist: 'Vanessa Carlton', genre: 'pop-modern' },
+  'last christmas': { artist: 'Wham!', genre: 'pop-modern' },
+  'call me maybe': { artist: 'Carly Rae Jepsen', genre: 'pop-modern' },
+  'just the way you are': { artist: 'Milky', genre: 'pop-modern' },
+  'como un burro amarrado': { genre: 'cumbia' },
+  'partido en dos': { genre: 'cumbia' },
+  'la traviesa': { genre: 'cumbia' },
+};
+
+export function knownSongMeta(title: string): KnownSongMeta | null {
+  return KNOWN_SONG_META[normalizeName(title)] ?? null;
+}
 
 export function normalizeName(value: string): string {
   return value
@@ -258,4 +370,32 @@ export const SONG_CATALOG: CatalogEntry[] = [
   { artist: 'Olivia Rodrigo', title: 'Good 4 U', genre: 'pop-modern' },
   { artist: 'Olivia Rodrigo', title: 'Vampire', genre: 'pop-modern' },
   { artist: 'Olivia Rodrigo', title: 'Deja Vu', genre: 'pop-modern' },
+  { artist: 'Vanessa Carlton', title: 'A Thousand Miles', genre: 'pop-modern' },
+  { artist: 'Vanessa Carlton', title: 'Ordinary Day', genre: 'pop-modern' },
+  { artist: 'Vanessa Carlton', title: 'White Houses', genre: 'pop-modern' },
+  { artist: 'Michelle Branch', title: 'Everywhere', genre: 'pop-modern' },
+  { artist: 'Michelle Branch', title: 'All You Wanted', genre: 'pop-modern' },
+  { artist: 'Norah Jones', title: "Don't Know Why", genre: 'pop-modern' },
+  { artist: 'Norah Jones', title: 'Come Away with Me', genre: 'pop-modern' },
+  { artist: 'Avril Lavigne', title: 'Complicated', genre: 'pop-modern' },
+  { artist: 'Avril Lavigne', title: 'Sk8er Boi', genre: 'pop-modern' },
+  { artist: 'Wham!', title: 'Last Christmas', genre: 'pop-modern' },
+  { artist: 'Wham!', title: 'Wake Me Up Before You Go-Go', genre: 'pop-modern' },
+  { artist: 'Mariah Carey', title: 'All I Want for Christmas Is You', genre: 'pop-modern' },
+  { artist: 'Mariah Carey', title: 'Hero', genre: 'pop-modern' },
+  { artist: 'Ed Sheeran', title: 'Shape of You', genre: 'pop-modern' },
+  { artist: 'Ed Sheeran', title: 'Perfect', genre: 'pop-modern' },
+  { artist: 'Taylor Swift', title: 'Anti-Hero', genre: 'pop-modern' },
+  { artist: 'Taylor Swift', title: 'Shake It Off', genre: 'pop-modern' },
+  { artist: 'Adele', title: 'Rolling in the Deep', genre: 'pop-modern' },
+  { artist: 'Adele', title: 'Someone Like You', genre: 'pop-modern' },
+  { artist: 'Los Ángeles Azules', title: 'Nunca Es Suficiente', genre: 'cumbia' },
+  { artist: 'Los Ángeles Azules', title: 'Cómo Te Voy a Olvidar', genre: 'cumbia' },
+  { artist: 'Los Ángeles Azules', title: '17 Años', genre: 'cumbia' },
+  { artist: 'Los Bukis', title: 'Tu Cárcel', genre: 'cumbia' },
+  { artist: 'Los Bukis', title: 'Cómo Fui a Enamorarme de Ti', genre: 'cumbia' },
+  { artist: 'Los Bukis', title: 'A Donde Vayas', genre: 'cumbia' },
+  { artist: 'Grupo 5', title: 'Motor y Motivo', genre: 'cumbia' },
+  { artist: 'Grupo 5', title: 'Te Vas', genre: 'cumbia' },
+  { artist: 'Grupo 5', title: 'Mujer Infiel', genre: 'cumbia' },
 ];

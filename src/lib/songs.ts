@@ -1,9 +1,31 @@
 import {
+  artistLanguage,
   artistGender,
+  detectLanguage,
+  knownSongMeta,
   normalizeName,
   SONG_CATALOG,
   type CatalogEntry,
 } from '../data/songCatalog';
+
+function resolveLanguage(song: OptionSource, catalog: readonly CatalogEntry[]): 'es' | 'en' {
+  if (song.artist.trim().length > 0) {
+    const byArtist = catalog.find(
+      (candidate) => normalizeName(candidate.artist) === normalizeName(song.artist),
+    );
+    if (byArtist !== undefined) return artistLanguage(byArtist.artist) ?? 'es';
+  }
+  const byTitle = catalog.find(
+    (candidate) => normalizeName(candidate.title) === normalizeName(song.title),
+  );
+  if (byTitle !== undefined) return artistLanguage(byTitle.artist) ?? 'es';
+  const meta = knownSongMeta(song.title);
+  if (meta?.artist !== undefined) {
+    const language = artistLanguage(meta.artist);
+    if (language !== null) return language;
+  }
+  return detectLanguage(song.title);
+}
 
 export interface ParsedSongName {
   title: string;
@@ -81,35 +103,52 @@ export function buildOptions(
 
   const normalize = normalizeName;
   const gender = artistGender(correct.artist);
-
+  const language = resolveLanguage(correct, catalog);
+  const meta = knownSongMeta(correct.title);
   const entry =
     correct.artist.trim().length > 0
       ? catalog.find((candidate) => normalize(candidate.artist) === normalize(correct.artist))
-      : undefined;
+      : catalog.find((candidate) => normalize(candidate.title) === normalize(correct.title));
+  const genre = entry?.genre ?? meta?.genre ?? null;
 
-  if (entry !== undefined) {
-    const sameGenre = catalog.filter(
+  const usedArtists = new Set([normalize(correct.artist)]);
+  const takeFrom = (list: readonly CatalogEntry[]) => {
+    for (const candidate of shuffle(list, random)) {
+      if (distractors.length === 3) return;
+      const artistKey = normalize(candidate.artist);
+      if (usedArtists.has(artistKey)) continue;
+      if (artistLanguage(candidate.artist) !== language) continue;
+      usedArtists.add(artistKey);
+      add(songLabel(candidate), `cat:${candidate.artist}:${candidate.title}`);
+    }
+  };
+
+  const sameLanguage = catalog.filter(
+    (candidate) => normalize(candidate.artist) !== normalize(correct.artist),
+  );
+  const sameGenre =
+    genre === null ? sameLanguage : sameLanguage.filter((candidate) => candidate.genre === genre);
+
+  takeFrom(
+    gender === null
+      ? sameGenre
+      : sameGenre.filter((candidate) => artistGender(candidate.artist) === gender),
+  );
+  if (distractors.length < 3) takeFrom(sameGenre);
+  if (distractors.length < 3) takeFrom(sameLanguage);
+
+  if (distractors.length < 3) {
+    const sameLanguagePool = pool.filter(
       (candidate) =>
-        candidate.genre === entry.genre &&
-        normalize(candidate.artist) !== normalize(entry.artist),
+        candidate.id !== correct.id && resolveLanguage(candidate, catalog) === language,
     );
-    const usedArtists = new Set([normalize(correct.artist)]);
-    const takeFrom = (list: readonly CatalogEntry[]) => {
-      for (const candidate of shuffle(list, random)) {
-        if (distractors.length === 3) return;
-        const artistKey = normalize(candidate.artist);
-        if (usedArtists.has(artistKey)) continue;
-        usedArtists.add(artistKey);
-        add(songLabel(candidate), `cat:${candidate.artist}:${candidate.title}`);
-      }
-    };
-
-    takeFrom(
-      gender === null
-        ? sameGenre
-        : sameGenre.filter((candidate) => artistGender(candidate.artist) === gender),
-    );
-    if (distractors.length < 3) takeFrom(sameGenre);
+    for (const candidate of shuffle(sameLanguagePool, random)) {
+      const artistKey = normalize(candidate.artist);
+      if (usedArtists.has(artistKey)) continue;
+      usedArtists.add(artistKey);
+      add(songLabel(candidate), candidate.id);
+      if (distractors.length === 3) break;
+    }
   }
 
   if (distractors.length < 3) {

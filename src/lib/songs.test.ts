@@ -70,9 +70,11 @@ describe('buildOptions', () => {
     expect(new Set(options.map((option) => option.label)).size).toBe(options.length);
   });
 
-  it('degrades gracefully when the pool is smaller than four songs', () => {
+  it('still returns four options when the loaded pool is small', () => {
     const options = buildOptions(pool[0]!, pool.slice(0, 2), () => 0.5);
-    expect(options.map((option) => option.id).sort()).toEqual(['a', 'b']);
+    expect(options).toHaveLength(4);
+    expect(new Set(options.map((option) => option.label)).size).toBe(4);
+    expect(options.some((option) => option.id === 'a')).toBe(true);
   });
 
   it('places the correct song in a random position', () => {
@@ -111,5 +113,61 @@ describe('buildOptions', () => {
     const options = buildOptions({ id: 'fr', title: 'La Rueda', artist: 'Frankie Ruiz' }, pool);
     expect(options.filter((option) => option.label.startsWith('Frankie Ruiz — '))).toHaveLength(1);
     expect(new Set(options.map((option) => option.label.split(' — ')[0])).size).toBe(4);
+  });
+
+  it('keeps the same language for the distractors', () => {
+    const english = buildOptions({ id: 'atm', title: 'A Thousand Miles', artist: '' }, pool).map(
+      (option) => option.label,
+    );
+    expect(english.some((label) => label.startsWith('Anitta — '))).toBe(false);
+    expect(english.some((label) => label.startsWith('José José — '))).toBe(false);
+    expect(
+      english.some(
+        (label) =>
+          [
+            'Dua Lipa',
+            'The Weeknd',
+            'Billie Eilish',
+            'Harry Styles',
+            'Coldplay',
+            'Bruno Mars',
+            'Olivia Rodrigo',
+            'Vanessa Carlton',
+            'Michelle Branch',
+            'Norah Jones',
+            'Avril Lavigne',
+            'Wham!',
+            'Mariah Carey',
+            'Ed Sheeran',
+            'Taylor Swift',
+            'Adele',
+          ].some((artist) => label.startsWith(artist + ' — ')),
+      ),
+    ).toBe(true);
+
+    const spanish = buildOptions({ id: 'fr', title: 'La Rueda', artist: 'Frankie Ruiz' }, pool).map(
+      (option) => option.label,
+    );
+    expect(spanish.some((label) => label.startsWith('Queen — '))).toBe(false);
+    expect(spanish.some((label) => label.startsWith('Dua Lipa — '))).toBe(false);
+  });
+
+  it('uses female English artists for a female English song', () => {
+    const labels = buildOptions(
+      { id: 'atm', title: 'A Thousand Miles', artist: 'Vanessa Carlton' },
+      pool,
+    ).map((option) => option.label);
+    expect(labels.some((label) => label.startsWith('Ed Sheeran — '))).toBe(false);
+    expect(labels.some((label) => label.startsWith('Bruno Mars — '))).toBe(false);
+    expect(labels.some((label) => label.startsWith('Coldplay — '))).toBe(false);
+    expect(
+      labels.some(
+        (label) =>
+          label.startsWith('Adele — ') ||
+          label.startsWith('Taylor Swift — ') ||
+          label.startsWith('Dua Lipa — ') ||
+          label.startsWith('Mariah Carey — '),
+      ),
+    ).toBe(true);
   });
 });
